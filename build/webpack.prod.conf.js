@@ -43,8 +43,6 @@ const generateHtml = ()=> {
           removeComments: true,
           collapseWhitespace: true,
           removeAttributeQuotes: true
-          // more options:
-          // https://github.com/kangax/html-minifier#options-quick-reference
         },
         chunksSortMode: 'dependency',
         inject: true

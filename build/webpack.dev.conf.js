@@ -13,18 +13,28 @@ const path = require('path')
 const HOST = process.env.HOST
 const PORT = process.env.PORT && Number(process.env.PORT)
 
+const generateEntry = ()=> {
+  var moduleNames = [];
+  var files = glob.sync('./src/pages/**/index.js');
+  files.forEach(function(f){
+    var name = /.*\/(pages\/.*?\/index)\.js/.exec(f)[1];
+    var moduleName = name.split('/')[name.split('/').length-2];
+    moduleNames.push( moduleName );
+  });
+  return moduleNames;
+}
+
 // 生成HTML文件
 const generateHtml = ()=> {
-  var files = glob.sync('./src/pages/**/index.html');
+  var files = glob.sync('./src/pages/**/*.html');
   var htmlPluginRule = [];
 
-  files.forEach((f) => {
-    var name = /.*\/(pages\/.*?\/index)\.html/.exec(f)[1];
-    // pages/pc/module1/index
+  files.forEach((f, index) => {
+    var name = /.*\/(pages\/.*?)\.html/.exec(f)[1];
     var plugin = new HtmlWebpackPlugin({
-        filename: path.resolve(__dirname, '../src/' + name +'.html'),
-        chunks: ['vendor', name, 'components'],
-        template: path.resolve(__dirname, '../src/' + name + '.html'),
+        filename: name.split('/')[name.split('/').length-1] + '.html',
+        template: f,
+        chunks: ['manifest', 'vendor', 'app', generateEntry()[index]],
         inject: true
     });
     htmlPluginRule.push(plugin);
@@ -81,6 +91,10 @@ module.exports = new Promise((resolve, reject) => {
       process.env.PORT = port
       // add port to devServer config
       devWebpackConfig.devServer.port = port
+
+      devWebpackConfig.devServer = {
+        contentBase: path.join(__dirname, "../src/")
+      }
 
       // Add FriendlyErrorsPlugin
       devWebpackConfig.plugins.push(new FriendlyErrorsPlugin({

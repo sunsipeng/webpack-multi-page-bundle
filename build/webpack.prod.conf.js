@@ -38,7 +38,15 @@ const generateHtml = ()=> {
     var plugin = new HtmlWebpackPlugin({
         filename: name.split('/')[name.split('/').length-1] + '.html',
         template: f,
-        chunks: [generateEntry()[index]],
+        chunks: ['manifest', 'vendor', 'app', generateEntry()[index]],
+        minify: {
+          removeComments: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true
+          // more options:
+          // https://github.com/kangax/html-minifier#options-quick-reference
+        },
+        chunksSortMode: 'dependency',
         inject: true
     });
     htmlPluginRule.push(plugin);

@@ -4,8 +4,6 @@ http://www.sipeng.net
 
 # webpack-multi-page-bundle
 
-> roomcard system
-
 ## Build Setup
 
 ``` bash

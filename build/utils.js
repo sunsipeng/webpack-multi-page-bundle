@@ -126,7 +126,7 @@ exports.findJSFilesByHTML = () => {
 }
 
 
-exports.generateHtml = ()=> {
+exports.generateHtml = (env)=> {
   var htmlPluginRule = [];
 
   htmls.forEach((file, index) => {
@@ -141,19 +141,22 @@ exports.generateHtml = ()=> {
 
     let terminalName = htmlName.split('/')[1] + '_';
     if(isExists){
-      var plugin = new HtmlWebpackPlugin({
+      var plugin = new HtmlWebpackPlugin(Object.assign(
+        {
           filename: `${htmlName}.html`,
           template: file,
           chunks: ['manifest', 'vendor', 'app',
           `${config.build.multiPeer ? terminalName : ''}${filePath[filePath.length - 1]}_${fileName}`],
-          minify: {
-            removeComments: true,
-            collapseWhitespace: true,
-            removeAttributeQuotes: true
-          },
           chunksSortMode: 'dependency',
           inject: true
-      });
+      },
+      env == 'development' ? {} : {
+        minify: {
+          removeComments: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true
+        }
+      }));
       htmlPluginRule.push(plugin);
     }
   });

@@ -24,25 +24,6 @@ const generateEntry = ()=> {
   return moduleNames;
 }
 
-// 生成HTML文件
-const generateHtml = ()=> {
-  var files = glob.sync('./src/pages/**/*.html');
-  var htmlPluginRule = [];
-
-  files.forEach((f, index) => {
-    var name = /.*\/(pages\/.*?)\.html/.exec(f)[1];
-    var plugin = new HtmlWebpackPlugin({
-        filename: name.split('/')[name.split('/').length-1] + '.html',
-        template: f,
-        chunks: ['manifest', 'vendor', 'app', generateEntry()[index]],
-        inject: true
-    });
-    htmlPluginRule.push(plugin);
-  });
-
-  return htmlPluginRule;
-}
-
 const devWebpackConfig = merge(baseWebpackConfig, {
   module: {
     rules: utils.styleLoaders({ sourceMap: config.dev.cssSourceMap, usePostCSS: true })
@@ -77,7 +58,7 @@ const devWebpackConfig = merge(baseWebpackConfig, {
     new webpack.NamedModulesPlugin(), // HMR shows correct file names in console on update.
     new webpack.NoEmitOnErrorsPlugin(),
     // https://github.com/ampedandwired/html-webpack-plugin
-    ...generateHtml()
+    ...utils.generateHtml('development')
   ]
 })
 

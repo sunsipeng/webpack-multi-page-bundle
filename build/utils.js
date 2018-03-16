@@ -139,11 +139,14 @@ exports.generateHtml = (env)=> {
     let isExists = fs.existsSync(jsFilePath);
 
 
-    let terminalName = htmlName.split('/')[1] + '_';
+    let bundleHtmlNameSplit = htmlName.split('/');
+    bundleHtmlNameSplit.shift();
+    let bundleHtmlName = bundleHtmlNameSplit.join('/');
+    
     if(isExists){
       var plugin = new HtmlWebpackPlugin(Object.assign(
         {
-          filename: `${htmlName}.html`,
+          filename: `${bundleHtmlName}.html`,
           template: file,
           chunks: ['manifest', 'vendor', 'app',
           `${config.build.multiPeer ? terminalName : ''}${filePath[filePath.length - 1]}_${fileName}`],

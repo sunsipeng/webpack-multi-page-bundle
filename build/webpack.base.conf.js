@@ -20,20 +20,10 @@ const createLintingRule = () => ({
   }
 })
 
-const generateEntry = ()=> {
-  var files = glob.sync('./src/pages/**/index.js');
-  var multiEntries = {};
-  files.forEach(function(f){
-    var name = /.*\/(pages\/.*?\/index)\.js/.exec(f)[1];
-    var moduleName = name.split('/')[name.split('/').length-2];
-    multiEntries[moduleName] = f;
-  });
-  return multiEntries;
-}
 
 module.exports = {
   context: path.resolve(__dirname, '../'),
-  entry: generateEntry(),
+  entry: utils.findJSFilesByHTML(),
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',

@@ -54,8 +54,10 @@ module.exports = {
 
     // Paths
     assetsRoot: path.resolve(__dirname, '../dist'),
-    assetsSubDirectory: 'room',
+    assetsSubDirectory: '',
     assetsPublicPath: '/',
+    // 是否支持多端打包（pages下多同级入口）
+    multiPeer: true,
 
     /**
      * Source Maps

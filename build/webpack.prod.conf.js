@@ -16,42 +16,6 @@ const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
   : require('../config/prod.env')
 
-const generateEntry = ()=> {
-  var moduleNames = [];
-  var files = glob.sync('./src/pages/**/index.js');
-  files.forEach(function(f){
-    var name = /.*\/(pages\/.*?\/index)\.js/.exec(f)[1];
-    var moduleName = name.split('/')[name.split('/').length-2];
-    moduleNames.push( moduleName );
-  });
-  return moduleNames;
-}
-
-
-// 生成HTML文件
-const generateHtml = ()=> {
-  var files = glob.sync('./src/pages/**/*.html');
-  var htmlPluginRule = [];
-
-  files.forEach((f, index) => {
-    var name = /.*\/(pages\/.*?)\.html/.exec(f)[1];
-    var plugin = new HtmlWebpackPlugin({
-        filename: name.split('/')[name.split('/').length-1] + '.html',
-        template: f,
-        chunks: ['manifest', 'vendor', 'app', generateEntry()[index]],
-        minify: {
-          removeComments: true,
-          collapseWhitespace: true,
-          removeAttributeQuotes: true
-        },
-        chunksSortMode: 'dependency',
-        inject: true
-    });
-    htmlPluginRule.push(plugin);
-  });
-
-  return htmlPluginRule;
-}
 
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -100,7 +64,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     // generate dist index.html with correct asset hash for caching.
     // you can customize output by editing /index.html
     // see https://github.com/ampedandwired/html-webpack-plugin
-    ...generateHtml(),
+    ...utils.generateHtml(),
     // keep module.id stable when vender modules does not change
     new webpack.HashedModuleIdsPlugin(),
     // enable scope hoisting

@@ -3,6 +3,9 @@ const path = require('path')
 const config = require('../config')
 const ExtractTextPlugin = require('extract-text-webpack-plugin')
 const packageConfig = require('../package.json')
+const glob = require('glob')
+const fs = require('fs')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 exports.assetsPath = function (_path) {
   const assetsSubDirectory = process.env.NODE_ENV === 'production'
@@ -98,4 +101,61 @@ exports.createNotifierCallback = () => {
       icon: path.join(__dirname, 'logo.png')
     })
   }
+}
+
+
+var htmls = glob.sync('./src/pages/**/*.html');
+exports.findJSFilesByHTML = () => {
+  var multiEntries = {};
+  htmls.forEach(file => {
+    let splitNames = file.split('/');
+    let htmlName = /.*\/(pages\/.*?)\.html/.exec(file)[1];
+    let fileName = splitNames[splitNames.length - 1].split('.')[0];
+    let filePath = splitNames;
+        filePath.pop();
+    let jsFilePath = `${filePath.join('/')}/${fileName}.js`;
+    let isExists = fs.existsSync(jsFilePath);
+    let terminalName = htmlName.split('/')[1] + '_';
+    if(isExists){
+      multiEntries[
+        `${config.build.multiPeer ? terminalName : ''}${filePath[filePath.length - 1]}_${fileName}`
+      ] = jsFilePath;
+    }
+  });
+  return multiEntries;
+}
+
+
+exports.generateHtml = ()=> {
+  var htmlPluginRule = [];
+
+  htmls.forEach((file, index) => {
+    let htmlName = /.*\/(pages\/.*?)\.html/.exec(file)[1];
+    let splitNames = file.split('/');
+    let fileName = splitNames[splitNames.length - 1].split('.')[0];
+    let filePath = splitNames;
+        filePath.pop();
+    let jsFilePath = `${filePath.join('/')}/${fileName}.js`;
+    let isExists = fs.existsSync(jsFilePath);
+
+
+    let terminalName = htmlName.split('/')[1] + '_';
+    if(isExists){
+      var plugin = new HtmlWebpackPlugin({
+          filename: `${htmlName}.html`,
+          template: file,
+          chunks: ['manifest', 'vendor', 'app',
+          `${config.build.multiPeer ? terminalName : ''}${filePath[filePath.length - 1]}_${fileName}`],
+          minify: {
+            removeComments: true,
+            collapseWhitespace: true,
+            removeAttributeQuotes: true
+          },
+          chunksSortMode: 'dependency',
+          inject: true
+      });
+      htmlPluginRule.push(plugin);
+    }
+  });
+  return htmlPluginRule;
 }

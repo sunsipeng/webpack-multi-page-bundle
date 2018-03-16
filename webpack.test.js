@@ -1,7 +1,7 @@
 'use strict'
 const path = require('path')
 const glob = require('glob')
-
+const utils = require('./build/utils')
 
 const generateHtml = () =>{
   var files = glob.sync('./src/pages/**/*.html');
@@ -23,4 +23,6 @@ const generateHtml = () =>{
   return htmlPluginRule;
 }
 
-generateHtml();
+// generateHtml();
+
+utils.findJSFilesByHTML()

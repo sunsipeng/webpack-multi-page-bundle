@@ -57,7 +57,7 @@ module.exports = {
     assetsSubDirectory: '',
     assetsPublicPath: '/',
     // 是否支持多端打包（pages下多同级入口）
-    multiPeer: false,
+    multiPeer: true,
 
     /**
      * Source Maps

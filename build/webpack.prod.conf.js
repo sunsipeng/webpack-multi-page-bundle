@@ -12,10 +12,12 @@ const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const glob = require('glob')
 
+var platfromMobileFlag = false;
+var platfromPCFlag = false;
+
 const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
   : require('../config/prod.env')
-
 
 const webpackConfig = merge(baseWebpackConfig, {
   module: {
@@ -71,15 +73,43 @@ const webpackConfig = merge(baseWebpackConfig, {
     new webpack.optimize.ModuleConcatenationPlugin(),
     // split vendor js into its own file
     new webpack.optimize.CommonsChunkPlugin({
-      name: 'vendor',
-      minChunks (module) {
-        // any required modules inside node_modules are extracted to vendor
+      name: 'mobile_vendor',
+      minChunks (module) {      
+        console.log('mobile----'+module.resource);
+        if(~module.resource.indexOf('mobile')){
+          platfromMobileFlag = true;
+        }
+
+        if(~module.resource.indexOf('pc')){
+          platfromMobileFlag = false;
+        }
+
         return (
           module.resource &&
-          /\.js$/.test(module.resource) &&
-          module.resource.indexOf(
+          /\.js$/.test(module.resource) &&  platfromMobileFlag && module.resource.indexOf(
             path.join(__dirname, '../node_modules')
-          ) === 0
+          ) == 0
+        )
+      }
+    }),
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'pc_vendor',
+      minChunks (module) {      
+        
+        if(~module.resource.indexOf('pc')){
+          platfromPCFlag = true;
+        }
+
+        if(~module.resource.indexOf('mobile')){
+          platfromPCFlag = false;
+        }
+
+        console.log(module.resource);
+        return (
+          module.resource &&
+          /\.js$/.test(module.resource) &&  platfromPCFlag && module.resource.indexOf(
+            path.join(__dirname, '../node_modules')
+          ) == 0
         )
       }
     }),

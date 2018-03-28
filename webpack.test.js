@@ -25,4 +25,32 @@ const generateHtml = () =>{
 
 // generateHtml();
 
-utils.findJSFilesByHTML()
+// utils.findJSFilesByHTML()
+// utils.thirdPartyDepHandle();
+
+module.exports = {
+	// mode: "development" || "production",
+	entry: {
+		pageA: "./pageA",
+		pageB: "./pageB",
+		pageC: "./pageC"
+	},
+	optimization: {
+		splitChunks: {
+			cacheGroups: {
+				vendor: {
+					test: /node_modules/,
+					chunks: "initial",
+					name: "vendor",
+					priority: 10,
+					enforce: true
+				}
+			}
+		}
+	},
+	output: {
+		path: path.join(__dirname, "dist"),
+		filename: "[name].js"
+	}
+};
+

@@ -6,6 +6,7 @@ const packageConfig = require('../package.json')
 const glob = require('glob')
 const fs = require('fs')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const webpack = require('webpack')
 
 exports.assetsPath = function (_path) {
   const assetsSubDirectory = process.env.NODE_ENV === 'production'
@@ -140,10 +141,15 @@ exports.generateHtml = (env)=> {
 
 
     let terminalName = htmlName.split('/')[1] + '_';
+    let nameBackup = htmlName.slice(0);
+    let bundleHtmlNameSplit = nameBackup.split('/');
+        bundleHtmlNameSplit.shift();
+    let bundleHtmlName = bundleHtmlNameSplit.join('/');
+
     if(isExists){
       var plugin = new HtmlWebpackPlugin(Object.assign(
         {
-          filename: `${htmlName}.html`,
+          filename: `${env == 'development' ? htmlName : bundleHtmlName}.html`,
           template: file,
           chunks: ['manifest', 'vendor', 'app',
           `${config.build.multiPeer ? terminalName : ''}${filePath[filePath.length - 1]}_${fileName}`],
@@ -161,4 +167,37 @@ exports.generateHtml = (env)=> {
     }
   });
   return htmlPluginRule;
+}
+
+
+exports.thirdPartyDepHandle = () =>{
+  var result = [];
+  
+
+
+
+  // var platforms = fs.readdirSync(path.join(__dirname, "../src/pages"));
+  // var platformDirs = path.join(__dirname, "../src/pages");
+  // var result = [];
+  // platforms.forEach(dirs=>{
+  //   var stat = fs.statSync(`${platformDirs}/${dirs}`);
+  //   if(stat.isDirectory()){
+  //     result.push(
+  //       new webpack.optimize.CommonsChunkPlugin({
+  //         name: `${dirs}_vendor`,
+  //         minChunks (module) {
+  //           // any required modules inside node_modules are extracted to vendor
+  //           return (
+  //             module.resource &&
+  //             /\.js$/.test(module.resource) &&
+  //             module.resource.indexOf(
+  //               path.join(__dirname, '../node_modules')
+  //             ) === 0
+  //           )
+  //         }
+  //       })
+  //     )
+  //   }
+  // });
+  return result;
 }

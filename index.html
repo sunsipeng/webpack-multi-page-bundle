@@ -1,0 +1,42 @@
+<script>
+
+(function(){
+  var getCookie = function () {
+    var cookieValue = document.cookie;
+    if(cookieValue){
+      var lotteryCookie = cookieValue.indexOf('zy_lottery_token');
+      if(~lotteryCookie){
+        return true;
+      }else{
+        return false;
+      }
+    }else{
+      return false;
+    }
+  },
+  isMobile = function () {
+    var u = navigator.userAgent;
+    return !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
+  },
+  redirect = function (url) {
+    window.location.href = url;
+  }
+
+  if(getCookie()){
+    if(isMobile()){
+      redirect('mobile/home/index.html');
+    }else{
+      redirect('pc/home/index.html');
+    }
+  }else{
+    if(isMobile()){
+      redirect('mobile/login/index.html');
+    }else{
+      redirect('pc/login/index.html');
+    }
+  }
+
+})();
+
+
+</script>
